@@ -65,7 +65,6 @@
                 android:layout_marginHorizontal="12dp"
                 android:layout_marginTop="12dp"
                 android:clickable="true"
-                android:onClick="eventButtonClicked"
                 android:background="#ffffff"
                 android:padding="8dp">
 
@@ -295,7 +294,6 @@
             android:layout_height="match_parent"
             android:layout_weight="100"
             android:background="#000fff"
-            android:onClick="listButtonClicked"
             android:text="List"
             android:textAllCaps="true"
             android:textColor="#ffffff"
@@ -312,7 +310,6 @@
             android:layout_height="match_parent"
             android:layout_weight="100"
             android:background="#000fff"
-            android:onClick="mapButtonClicked"
             android:text="Map"
             android:textAllCaps="true"
             android:textColor="#FFFFFF"

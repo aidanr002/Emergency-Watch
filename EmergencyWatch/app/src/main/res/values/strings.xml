@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Emergency Watch</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="maps_api">AIzaSyDy02qdnuBr0loPGxBclP2W6FLIsJlUt5c</string>
 </resources>
