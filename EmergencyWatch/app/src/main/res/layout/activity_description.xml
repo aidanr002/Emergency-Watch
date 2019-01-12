@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#ffffff"
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff"
+        android:paddingTop="8dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -52,6 +53,8 @@
     <TextView
         android:id="@+id/text_view_desciption_description"
         android:layout_width="match_parent"
+        android:textSize="16sp"
+        android:padding="8dp"
         android:layout_height="wrap_content"
         android:text="description" />
 </LinearLayout>
