@@ -29,7 +29,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements EventAdapter.OnItemClickListener{
+    public static final String EXTRA_EVENT = "event";
+    public static final String EXTRA_LOCATION = "location";
+    public static final String EXTRA_TIME = "time";
 
     private RecyclerView mRecyclerView;
     private EventAdapter mEventAdapter;
@@ -84,6 +87,7 @@ public class HomeActivity extends AppCompatActivity {
 
                             mEventAdapter = new EventAdapter(HomeActivity.this, mEventList);
                             mRecyclerView.setAdapter(mEventAdapter);
+                            mEventAdapter.setOnItemClickListener(HomeActivity.this);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -138,5 +142,17 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent descriptionIntent = new Intent(this, DescriptionActivity.class);
+        EventItem clickedItem = mEventList.get(position);
+
+        descriptionIntent.putExtra(EXTRA_EVENT, clickedItem.getEvent());
+        descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
+        descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
+
+        startActivity(descriptionIntent);
     }
 }

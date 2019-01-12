@@ -13,6 +13,15 @@ import java.util.ArrayList;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
     private Context mContext;
     private ArrayList <EventItem> mEventList;
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
 
     public EventAdapter  (Context context, ArrayList<EventItem> eventList) {
         mContext = context;
@@ -27,16 +36,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EventViewHolder eventViewHolder, int i) {
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int i) {
         EventItem currentItem = mEventList.get(i);
 
         String event = currentItem.getEvent();
         String location = currentItem.getLocation();
         String time = currentItem.getTime();
 
-        eventViewHolder.mTextViewEvent.setText(event);
-        eventViewHolder.mTextViewLocation.setText(location);
-        eventViewHolder.mTextViewTime.setText(time);
+        holder.mTextViewEvent.setText(event);
+        holder.mTextViewLocation.setText(location);
+        holder.mTextViewTime.setText(time);
 
     }
 
@@ -55,6 +64,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             mTextViewEvent = itemView.findViewById(R.id.text_view_event);
             mTextViewLocation = itemView.findViewById(R.id.text_view_location);
             mTextViewTime = itemView.findViewById(R.id.text_view_time);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }
