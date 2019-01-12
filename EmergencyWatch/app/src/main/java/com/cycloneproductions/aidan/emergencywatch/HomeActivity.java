@@ -33,6 +33,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
     public static final String EXTRA_EVENT = "event";
     public static final String EXTRA_LOCATION = "location";
     public static final String EXTRA_TIME = "time";
+    public static final String EXTRA_DESCRIPTION = "description";
 
     private RecyclerView mRecyclerView;
     private EventAdapter mEventAdapter;
@@ -66,7 +67,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
     }
 
     private void parseJSON() {
-        String url = "https://api.myjson.com/bins/lomw8";
+        String url = "https://api.myjson.com/bins/186b1k";
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -81,8 +82,9 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
                                 String eventHeading = event.getString("event_heading");
                                 String location = event.getString("location");
                                 String time = event.getString("time");
+                                String description = event.getString("description");
 
-                                mEventList.add(new EventItem(eventHeading, location, time));
+                                mEventList.add(new EventItem(eventHeading, location, time, description));
                             }
 
                             mEventAdapter = new EventAdapter(HomeActivity.this, mEventList);
@@ -152,6 +154,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         descriptionIntent.putExtra(EXTRA_EVENT, clickedItem.getEvent());
         descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
         descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
+        descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
 
         startActivity(descriptionIntent);
     }

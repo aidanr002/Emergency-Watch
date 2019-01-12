@@ -4,11 +4,13 @@ public class EventItem {
     private String mEvent;
     private String mLocation;
     private String mTime;
+    private String mDescription;
 
-    public EventItem(String event, String location, String time) {
+    public EventItem(String event, String location, String time, String description) {
         mEvent = event;
         mLocation = location;
         mTime = time;
+        mDescription = description;
     }
 
     public String getEvent() {
@@ -22,4 +24,7 @@ public class EventItem {
     public String getTime() {
         return mTime;
     }
+
+    public String getDescription() {return mDescription; }
+
 }

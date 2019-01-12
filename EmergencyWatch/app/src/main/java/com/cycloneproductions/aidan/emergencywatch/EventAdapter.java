@@ -42,6 +42,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         String event = currentItem.getEvent();
         String location = currentItem.getLocation();
         String time = currentItem.getTime();
+        String description = currentItem.getDescription();
 
         holder.mTextViewEvent.setText(event);
         holder.mTextViewLocation.setText(location);
@@ -58,6 +59,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         public TextView mTextViewEvent;
         public TextView mTextViewLocation;
         public TextView mTextViewTime;
+        public TextView mTextViewDescription;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
