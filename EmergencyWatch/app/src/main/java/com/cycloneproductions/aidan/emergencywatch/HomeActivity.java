@@ -27,13 +27,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class HomeActivity extends AppCompatActivity implements EventAdapter.OnItemClickListener{
+
+public class HomeActivity extends AppCompatActivity implements EventAdapter.OnItemClickListener, Serializable {
     public static final String EXTRA_EVENT = "event";
     public static final String EXTRA_LOCATION = "location";
     public static final String EXTRA_TIME = "time";
     public static final String EXTRA_DESCRIPTION = "description";
+    public static final String EXTRA_EVENTLIST = "eventlist";
 
     private RecyclerView mRecyclerView;
     private EventAdapter mEventAdapter;
@@ -51,11 +55,6 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         setContentView(R.layout.activity_home);
         Log.d(TAG, "onCreate: Oncreate is starting for HomeActivity");
 
-        if (isServicesOk()) {
-            Log.d(TAG, "onCreate: Services are ok, initialising map activity");
-            init();
-        }
-
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -64,6 +63,10 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         mRequestQueue = Volley.newRequestQueue(this);
         parseJSON();
 
+        if (isServicesOk()) {
+            Log.d(TAG, "onCreate: Services are ok, initialising map activity");
+            init();
+        }
     }
 
     private void parseJSON() {
@@ -114,6 +117,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
                 Log.d(TAG, "onClick: Clicked button to map");
 
                 Intent intent = new Intent(HomeActivity.this, MapActivity.class);
+                intent.putExtra(EXTRA_EVENTLIST, mEventList);
                 startActivity(intent);
                 Log.d(TAG, "onClick: MapActivity should have/be starting");
             }
