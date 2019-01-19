@@ -4,6 +4,8 @@ package com.cycloneproductions.aidan.emergencywatch;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.IOException;
 import java.io.Serializable;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -24,6 +28,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -31,30 +37,26 @@ import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVE
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, Serializable{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,  Serializable{
     private static final String TAG = "MapActivity";
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 9f;
+    private static final float DEFAULT_ZOOM = 8f;
 
     // Variables
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady: Map is ready");
-        Toast.makeText(this, "Map Ready", Toast.LENGTH_SHORT).show();
-        mMap = googleMap;
-        if (mLocationPermissionGranted) {
-            getDeviceLocation();
-
-        }
-    }
+    private ArrayList<EventItem> mEventList;
+    private Marker focusMarker;
+    public static final String EXTRA_EVENT = "event";
+    public static final String EXTRA_LOCATION = "location";
+    public static final String EXTRA_TIME = "time";
+    public static final String EXTRA_DESCRIPTION = "description";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,9 +64,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
         Log.d(TAG, "onCreate: Oncreate is starting for MapActivity");
 
-        ArrayList<EventItem> mEventList = (ArrayList<EventItem>) getIntent().getSerializableExtra(EXTRA_EVENTLIST);
+        mEventList = new ArrayList<>();
 
-        System.out.println(mEventList.toString());
+        mEventList = (ArrayList<EventItem>) getIntent().getSerializableExtra(EXTRA_EVENTLIST);
+
 
         getLocationPermission();
 
@@ -79,6 +82,67 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady: Map is ready");
+        Toast.makeText(this, "Map Ready", Toast.LENGTH_SHORT).show();
+        mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        List<Marker> markerList = new ArrayList<>();
+
+        for( int i=0; i < mEventList.size() -1; i++) {
+            EventItem focusItem = mEventList.get(i);
+            String focusAddress = focusItem.getLocation();
+
+            focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(focusAddress)).title(String.valueOf(i)));
+            focusMarker.setTag(i);
+
+            markerList.add(focusMarker);
+        }
+
+        Log.d(TAG, "onMapReady: Got the latlng and made a marker. Marker added to list");
+
+        mMap.setOnMarkerClickListener(this);
+
+        for (Marker m : markerList) {
+            LatLng latLng = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
+            mMap.addMarker(new MarkerOptions().position(latLng));
+            moveCamera(latLng, DEFAULT_ZOOM);
+        }
+
+        if (mLocationPermissionGranted) {
+            getDeviceLocation();
+
+        }
+    }
+
+    public LatLng getLocationFromAddress(String strAddress){
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress,5);
+            if (address==null) {
+                return null;
+            }
+            Address location=address.get(0);
+            location.getLatitude();
+            location.getLongitude();
+
+            p1 = new LatLng((double) (location.getLatitude() * 1E6),
+                    (double) (location.getLongitude() * 1E6));
+
+            return p1;
+        }
+        catch (IOException ioEx){
+            return null;
+        }
+
     }
 
     private void getDeviceLocation() {
@@ -167,6 +231,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Integer focusId = (Integer) marker.getTag();
+
+        Intent descriptionIntent = new Intent(this, DescriptionActivity.class);
+        EventItem clickedItem = mEventList.get(focusId);
+
+        descriptionIntent.putExtra(EXTRA_EVENT, clickedItem.getEvent());
+        descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
+        descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
+        descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
+
+        startActivity(descriptionIntent);
+        return false;
     }
 }
 
