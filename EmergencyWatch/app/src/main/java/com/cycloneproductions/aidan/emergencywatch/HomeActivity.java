@@ -70,7 +70,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
     }
 
     private void parseJSON() {
-        String url = "https://api.myjson.com/bins/186b1k";
+        String url = "https://api.myjson.com/bins/1bhz58";
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {

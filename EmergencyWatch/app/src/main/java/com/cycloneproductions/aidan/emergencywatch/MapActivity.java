@@ -2,6 +2,7 @@ package com.cycloneproductions.aidan.emergencywatch;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -36,7 +37,6 @@ import com.google.android.gms.tasks.Task;
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -93,14 +93,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<Marker> markerList = new ArrayList<>();
 
-        for( int i=0; i < mEventList.size() -1; i++) {
+        for( int i=0; i < mEventList.size(); i++) {
             EventItem focusItem = mEventList.get(i);
             String focusAddress = focusItem.getLocation();
+            if (getLocationFromAddress(this, focusAddress) != null) {
+                focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(this, focusAddress)));
 
-            focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(focusAddress)).title(String.valueOf(i)));
-            focusMarker.setTag(i);
+                focusMarker.setTag(i);
 
-            markerList.add(focusMarker);
+                markerList.add(focusMarker);
+            }
         }
 
         Log.d(TAG, "onMapReady: Got the latlng and made a marker. Marker added to list");
@@ -110,6 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (Marker m : markerList) {
             LatLng latLng = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
             mMap.addMarker(new MarkerOptions().position(latLng));
+            Log.d(TAG, "onMapReady: Displaying marker at:" + latLng);
             moveCamera(latLng, DEFAULT_ZOOM);
         }
 
@@ -119,31 +122,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    public LatLng getLocationFromAddress(String strAddress){
+    public LatLng getLocationFromAddress(Context context, String strAddress) {
 
-        Geocoder coder = new Geocoder(this);
+        Geocoder coder = new Geocoder(context);
         List<Address> address;
         LatLng p1 = null;
 
         try {
-            address = coder.getFromLocationName(strAddress,5);
-            if (address==null) {
+            // May throw an IOException
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
                 return null;
             }
-            Address location=address.get(0);
-            location.getLatitude();
-            location.getLongitude();
 
-            p1 = new LatLng((double) (location.getLatitude() * 1E6),
-                    (double) (location.getLongitude() * 1E6));
+            Address location = address.get(0);
+            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
 
-            return p1;
-        }
-        catch (IOException ioEx){
-            return null;
+        } catch (IOException ex) {
+
+            ex.printStackTrace();
         }
 
+        return p1;
     }
+
 
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: Gettingt the devices current location");
@@ -249,4 +251,3 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return false;
     }
 }
-
