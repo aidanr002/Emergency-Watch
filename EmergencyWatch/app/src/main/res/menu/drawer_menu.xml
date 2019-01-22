@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_list_of_events"
+            android:icon="@drawable/ic_list_of_events"
+            android:title="List of Events" />
+
+        <item android:id="@+id/nav_map_of_events"
+            android:icon="@drawable/ic_map_of_events"
+            android:title="Map of Events" />
+<!--
+        <item android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+
+        <item android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help" />
+
+        <item android:id="@+id/nav_bug_report"
+            android:icon="@drawable/ic_bug_report"
+            android:title="Report a Problem" />
+
+        <item android:id="@+id/nav_where_next"
+            android:icon="@drawable/ic_where_next"
+            android:title="Where Next?" /> !-->
+    </group>
+</menu>

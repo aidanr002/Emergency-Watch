@@ -1,6 +1,5 @@
 package com.cycloneproductions.aidan.emergencywatch;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -8,20 +7,26 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.Serializable;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +45,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,  Serializable{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnMarkerClickListener, Serializable {
     private static final String TAG = "MapActivity";
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 8f;
+    private static final float DEFAULT_ZOOM = 9f;
 
     // Variables
     private Boolean mLocationPermissionGranted = false;
@@ -57,6 +62,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public static final String EXTRA_LOCATION = "location";
     public static final String EXTRA_TIME = "time";
     public static final String EXTRA_DESCRIPTION = "description";
+    private DrawerLayout drawer;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +75,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mEventList = (ArrayList<EventItem>) getIntent().getSerializableExtra(EXTRA_EVENTLIST);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(R.id.nav_map_of_events);
+        }
 
         getLocationPermission();
 
@@ -93,14 +115,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<Marker> markerList = new ArrayList<>();
 
-        for( int i=0; i < mEventList.size(); i++) {
+        for (int i = 0; i < mEventList.size(); i++) {
             EventItem focusItem = mEventList.get(i);
             String focusAddress = focusItem.getLocation();
             if (getLocationFromAddress(this, focusAddress) != null) {
                 focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(this, focusAddress)));
 
                 focusMarker.setTag(i);
-
+                System.out.println(i);
                 markerList.add(focusMarker);
             }
         }
@@ -136,7 +158,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
 
             Address location = address.get(0);
-            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+            p1 = new LatLng(location.getLatitude(), location.getLongitude());
 
         } catch (IOException ex) {
 
@@ -152,27 +174,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
-            if(mLocationPermissionGranted) {
+            if (mLocationPermissionGranted) {
                 final Task location = mFusedLocationProviderClient.getLastLocation();
 
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found Location");
                             Location currentLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
 
-                        }else{
+                        } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText((MapActivity.this), "Unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
-        }catch (SecurityException e){
+        } catch (SecurityException e) {
             Log.d(TAG, "getDeviceLocation: Security Exception:" + e.getMessage());
         }
     }
@@ -249,5 +271,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         startActivity(descriptionIntent);
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.nav_list_of_events:
+                Intent listIntent = new Intent(MapActivity.this, HomeActivity.class);
+                startActivity(listIntent);
+                break;
+
+            case R.id.nav_map_of_events:
+                Intent mapIntent = new Intent(MapActivity.this, MapActivity.class);
+                mapIntent.putExtra(EXTRA_EVENTLIST, mEventList);
+                startActivity(mapIntent);
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

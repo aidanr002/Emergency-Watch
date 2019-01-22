@@ -1,18 +1,24 @@
 package com.cycloneproductions.aidan.emergencywatch;
 
-import android.app.Activity;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,10 +35,9 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
-public class HomeActivity extends AppCompatActivity implements EventAdapter.OnItemClickListener, Serializable {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EventAdapter.OnItemClickListener, Serializable {
     public static final String EXTRA_EVENT = "event";
     public static final String EXTRA_LOCATION = "location";
     public static final String EXTRA_TIME = "time";
@@ -44,6 +49,7 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
     private ArrayList<EventItem> mEventList;
     private RequestQueue mRequestQueue;
 
+    private DrawerLayout drawer;
 
     private static final String TAG = "HomeActivity";
 
@@ -53,6 +59,23 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(R.id.nav_list_of_events);
+        }
+
         Log.d(TAG, "onCreate: Oncreate is starting for HomeActivity");
 
         mRecyclerView = findViewById(R.id.recycler_view);
@@ -66,6 +89,15 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         if (isServicesOk()) {
             Log.d(TAG, "onCreate: Services are ok, initialising map activity");
             init();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -124,11 +156,6 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         });
     }
 
-    public void menuButtonClicked(View view) {
-        TextView menuButton = (TextView) findViewById(R.id.menuButton);
-        menuButton.setText("Pressed");
-    }
-
     public boolean isServicesOk() {
         Log.d(TAG, "isServicesOk: Checking Google Services Version");
 
@@ -159,7 +186,27 @@ public class HomeActivity extends AppCompatActivity implements EventAdapter.OnIt
         descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
         descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
         descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
+        descriptionIntent.putExtra(EXTRA_EVENTLIST, mEventList);
+
 
         startActivity(descriptionIntent);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.nav_list_of_events:
+                Intent listIntent = new Intent(HomeActivity.this, HomeActivity.class);
+                startActivity(listIntent);
+                break;
+
+            case R.id.nav_map_of_events:
+                Intent mapIntent = new Intent(HomeActivity.this, MapActivity.class);
+                mapIntent.putExtra(EXTRA_EVENTLIST, mEventList);
+                startActivity(mapIntent);
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

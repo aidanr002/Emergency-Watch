@@ -2,4 +2,6 @@
     <string name="app_name">Emergency Watch</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="maps_api">AIzaSyDy02qdnuBr0loPGxBclP2W6FLIsJlUt5c</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
 </resources>
