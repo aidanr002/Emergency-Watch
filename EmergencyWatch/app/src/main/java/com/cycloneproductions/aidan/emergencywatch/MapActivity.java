@@ -27,22 +27,33 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.Serializable;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnMarkerClickListener, Serializable {
@@ -63,17 +74,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public static final String EXTRA_TIME = "time";
     public static final String EXTRA_DESCRIPTION = "description";
     private DrawerLayout drawer;
+    private RequestQueue mRequestQueue;
+
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestQueue = Volley.newRequestQueue(this);
+        parseJSON();
         setContentView(R.layout.activity_map);
         Log.d(TAG, "onCreate: Oncreate is starting for MapActivity");
-
-        mEventList = new ArrayList<>();
-
-        mEventList = (ArrayList<EventItem>) getIntent().getSerializableExtra(EXTRA_EVENTLIST);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -91,7 +102,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             navigationView.setCheckedItem(R.id.nav_map_of_events);
         }
 
-        getLocationPermission();
+        mEventList = new ArrayList<>();
 
         Button buttontolist = findViewById(R.id.listButton);
 
@@ -106,23 +117,62 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    public void refresh(View v) {
+        parseJSON();
+        Log.d(TAG, "refresh: Refreshed");
+    }
+
+    private void parseJSON() {
+        String url = "http://emergencywatch.pythonanywhere.com/static/";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("events");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject event = jsonArray.getJSONObject(i);
+
+                                String eventHeading = event.getString("event_heading");
+                                String location = event.getString("location");
+                                String time = event.getString("time");
+                                String description = event.getString("description");
+                                String eventIcon = event.getString("event_icon");
+
+                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon));
+                            }
+                            getLocationPermission();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        mRequestQueue.add(request);
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady: Map is ready");
         Toast.makeText(this, "Map Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
         List<Marker> markerList = new ArrayList<>();
 
         for (int i = 0; i < mEventList.size(); i++) {
             EventItem focusItem = mEventList.get(i);
             String focusAddress = focusItem.getLocation();
+            String focusIcon = focusItem.getEventIcon();
             if (getLocationFromAddress(this, focusAddress) != null) {
                 focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(this, focusAddress)));
-
+                focusMarker.setIcon(BitmapDescriptorFactory.fromPath(focusIcon));
                 focusMarker.setTag(i);
-                System.out.println(i);
                 markerList.add(focusMarker);
             }
         }
@@ -156,15 +206,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (address == null) {
                 return null;
             }
-
             Address location = address.get(0);
             p1 = new LatLng(location.getLatitude(), location.getLongitude());
-
         } catch (IOException ex) {
-
             ex.printStackTrace();
         }
-
         return p1;
     }
 

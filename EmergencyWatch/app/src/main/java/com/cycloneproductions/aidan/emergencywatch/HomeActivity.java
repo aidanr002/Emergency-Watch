@@ -43,6 +43,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_TIME = "time";
     public static final String EXTRA_DESCRIPTION = "description";
     public static final String EXTRA_EVENTLIST = "eventlist";
+    public static final String EXTRA_EVENTICON = "eventIcon";
 
     private RecyclerView mRecyclerView;
     private EventAdapter mEventAdapter;
@@ -102,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void parseJSON() {
-        String url = "https://api.myjson.com/bins/1bhz58";
+        String url = "http://emergencywatch.pythonanywhere.com/static/";
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -118,8 +119,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 String location = event.getString("location");
                                 String time = event.getString("time");
                                 String description = event.getString("description");
+                                String eventIcon = event.getString("event_icon");
 
-                                mEventList.add(new EventItem(eventHeading, location, time, description));
+                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon));
                             }
 
                             mEventAdapter = new EventAdapter(HomeActivity.this, mEventList);
@@ -139,6 +141,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mRequestQueue.add(request);
     }
 
+    public void refresh(View v) {
+        parseJSON();
+        Log.d(TAG, "refresh: Refreshed");
+    }
+
     private void init() {
         Log.d(TAG, "init: Initialising onclicklistener for events map button from home activity");
 
@@ -149,7 +156,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Log.d(TAG, "onClick: Clicked button to map");
 
                 Intent intent = new Intent(HomeActivity.this, MapActivity.class);
-                intent.putExtra(EXTRA_EVENTLIST, mEventList);
                 startActivity(intent);
                 Log.d(TAG, "onClick: MapActivity should have/be starting");
             }
@@ -186,8 +192,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
         descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
         descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
-        descriptionIntent.putExtra(EXTRA_EVENTLIST, mEventList);
-
+        descriptionIntent.putExtra(EXTRA_EVENTICON, clickedItem.getEventIcon());
 
         startActivity(descriptionIntent);
     }
@@ -202,7 +207,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_map_of_events:
                 Intent mapIntent = new Intent(HomeActivity.this, MapActivity.class);
-                mapIntent.putExtra(EXTRA_EVENTLIST, mEventList);
                 startActivity(mapIntent);
                 break;
         }

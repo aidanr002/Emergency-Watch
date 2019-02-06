@@ -10,7 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -19,10 +22,10 @@ import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVE
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_LOCATION;
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_TIME;
+import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTICON;
 
 public class DescriptionActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
-    private ArrayList<EventItem> mEventList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +34,6 @@ public class DescriptionActivity extends AppCompatActivity implements Navigation
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mEventList = new ArrayList<>();
-        mEventList = (ArrayList<EventItem>) getIntent().getSerializableExtra(EXTRA_EVENTLIST);
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -49,16 +49,19 @@ public class DescriptionActivity extends AppCompatActivity implements Navigation
         String location = intent.getStringExtra(EXTRA_LOCATION);
         String time = intent.getStringExtra(EXTRA_TIME);
         String description = intent.getStringExtra(EXTRA_DESCRIPTION);
+        String eventIcon = intent.getStringExtra(EXTRA_EVENTICON);
 
         TextView textViewEvent = findViewById(R.id.text_view_event_description);
         TextView textViewLocation = findViewById(R.id.text_view_location_description);
         TextView textViewTime = findViewById(R.id.text_view_time_description);
         TextView textViewDescription = findViewById(R.id.text_view_desciption_description);
+        ImageView imageViewEventIcon = findViewById(R.id.image_view_description);
 
         textViewEvent.setText(event);
         textViewLocation.setText(location);
         textViewTime.setText(time);
         textViewDescription.setText(description);
+        Picasso.with(this).load(eventIcon).fit().into(imageViewEventIcon);
     }
     @Override
     public void onBackPressed() {
@@ -79,7 +82,6 @@ public class DescriptionActivity extends AppCompatActivity implements Navigation
 
             case R.id.nav_map_of_events:
                 Intent mapIntent = new Intent(DescriptionActivity.this, MapActivity.class);
-                mapIntent.putExtra(EXTRA_EVENTLIST, mEventList);
                 startActivity(mapIntent);
                 break;
         }
