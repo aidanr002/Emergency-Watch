@@ -4,10 +4,14 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -19,12 +23,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 
 import com.android.volley.Request;
@@ -39,20 +45,29 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.koushikdutta.ion.Ion;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTICON;
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
 
 
@@ -84,6 +99,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mRequestQueue = Volley.newRequestQueue(this);
         parseJSON();
         setContentView(R.layout.activity_map);
+        if (android.os.Build.VERSION.SDK_INT > 9)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         Log.d(TAG, "onCreate: Oncreate is starting for MapActivity");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -171,11 +191,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String focusIcon = focusItem.getEventIcon();
             if (getLocationFromAddress(this, focusAddress) != null) {
                 focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(this, focusAddress)));
-                focusMarker.setIcon(BitmapDescriptorFactory.fromPath(focusIcon));
                 focusMarker.setTag(i);
                 markerList.add(focusMarker);
             }
-        }
+            }
+
 
         Log.d(TAG, "onMapReady: Got the latlng and made a marker. Marker added to list");
 
@@ -314,6 +334,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
         descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
         descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
+        descriptionIntent.putExtra(EXTRA_EVENTICON, clickedItem.getEventIcon());
 
         startActivity(descriptionIntent);
         return false;

@@ -4,6 +4,9 @@ import json
 import time
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+import datetime
+from datetime import datetime
+from dateutil import tz
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -15,7 +18,7 @@ while True:
     data['events'] = []
 
     #fire
-    INFORMATION_FIRE_ICON = "emergencywatch.cyclonewebservices.com/01_NOTIFICATION.bmp"
+    INFORMATION_FIRE_ICON = "https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png"
     ADVICE_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png"
     WATCHACT_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png"
     EMERGENCY_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30px.png"
@@ -54,11 +57,22 @@ while True:
         #Gets updated time
         event_time = entry.find('updated').text
 
+        from_zone = tz.gettz('UTC')
+        to_zone = tz.gettz('Australia/Brisbane')
+        utc = datetime.strptime(event_time, '%Y-%m-%dT%H:%M:%S')
+        utc = utc.replace(tzinfo=from_zone)
+        event_time = utc.astimezone(to_zone)
+        event_time_converted = event_time.isoformat()
+        print (event_time_converted)
+        print (event_time)
+
+
         #Gets the description
         event_content = entry.find("content").text
         event_content.replace('<div>','')
         event_content.replace('</div>','')
         event_content.replace('<b>','\n')
+
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")
 
@@ -74,7 +88,7 @@ while True:
         })
 
     with open('events.json', 'w') as outfile:
-        json.dump(data, outfile)
+        json.dump(data, outfile, default=str)
 
     print ('Completed Scrape. Sleeping for 5 minutes')
     time.sleep(300)
