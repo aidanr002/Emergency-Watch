@@ -63,8 +63,6 @@ while True:
         utc = utc.replace(tzinfo=from_zone)
         event_time = utc.astimezone(to_zone)
         event_time_converted = event_time.isoformat()
-        print (event_time_converted)
-        print (event_time)
 
 
         #Gets the description
@@ -86,6 +84,28 @@ while True:
             'event_lat': event_lat,
             'event_lng': event_lng
         })
+
+    # Last updated time
+    #Gets the time string
+    currentDT = datetime.now()
+
+    #Seperates into usable parts
+    year = "%d" % currentDT.year
+    month = "%d" % currentDT.month
+    day = "%d" % currentDT.day
+    hour = "%d" % currentDT.hour
+    minute = "%d" % currentDT.minute
+
+    #Concatanate the parts into the ideal string
+    if int(hour) > 12:
+        hour = int(hour) % 12
+        last_updated = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+    elif int(hour) <= 12:
+        last_updated = hour + ':' + minute + 'am ' + day + '/' + month + '/' + year
+    print (last_updated)
+
+    #Add to dict
+    data['events'].append(last_updated)
 
     with open('events.json', 'w') as outfile:
         json.dump(data, outfile, default=str)

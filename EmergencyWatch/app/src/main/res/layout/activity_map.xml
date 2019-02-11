@@ -48,6 +48,20 @@
             android:layout_height="1dp"
             android:background="#000000" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/last_updated_textview"
+            android:text="Last Updated: Unknown"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp" />
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000" />
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
