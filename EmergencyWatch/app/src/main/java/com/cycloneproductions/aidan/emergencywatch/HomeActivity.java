@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -32,6 +33,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -104,12 +106,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void parseJSON() {
         String url = "http://emergencywatch.pythonanywhere.com/static/";
-
+        Log.d(TAG, "parseJSON: Attempting to parse json");
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            Log.d(TAG, "onResponse: Trying primary JSON parser");
                             JSONArray jsonArray = response.getJSONArray("events");
 
                             for (int i = 0; i < jsonArray.length(); i++) {
@@ -131,7 +134,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        try {
+                            Log.d(TAG, "onResponse: Trying secondary JSON parser");
+                            JSONArray jsonArray = response.getJSONArray("last_updated");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject last_updated_array = jsonArray.getJSONObject(i);
+
+                                Log.d(TAG, "onResponse: got object");
+
+                                String last_updated = last_updated_array.getString("last_updated");
+                                TextView last_update_textView = findViewById(R.id.last_updated_textview);
+                                last_update_textView.setText(last_updated);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
+
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {

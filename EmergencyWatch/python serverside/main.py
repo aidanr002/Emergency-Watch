@@ -17,6 +17,7 @@ while True:
     data = {}
     data['events'] = []
 
+
     #fire
     INFORMATION_FIRE_ICON = "https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png"
     ADVICE_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png"
@@ -64,6 +65,21 @@ while True:
         event_time = utc.astimezone(to_zone)
         event_time_converted = event_time.isoformat()
 
+        #Seperates into usable parts
+        year = "%d" % event_time.year
+        month = "%d" % event_time.month
+        day = "%d" % event_time.day
+        hour = "%d" % event_time.hour
+        minute = "%d" % event_time.minute
+
+        #Concatanate the parts into the ideal string
+        if int(hour) > 12:
+            hour = int(hour) % 12
+            event_time = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+        elif int(hour) == 12:
+            event_time = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+        elif int(hour) < 12:
+            event_time = str(hour) + ':' + minute + 'am ' + day + '/' + month + '/' + year
 
         #Gets the description
         event_content = entry.find("content").text
@@ -89,6 +105,11 @@ while True:
     #Gets the time string
     currentDT = datetime.now()
 
+    from_zone = tz.gettz('GMT')
+    to_zone = tz.gettz('Australia/Brisbane')
+    utc = currentDT.replace(tzinfo=from_zone)
+    currentDT = utc.astimezone(to_zone)
+
     #Seperates into usable parts
     year = "%d" % currentDT.year
     month = "%d" % currentDT.month
@@ -99,13 +120,18 @@ while True:
     #Concatanate the parts into the ideal string
     if int(hour) > 12:
         hour = int(hour) % 12
-        last_updated = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
-    elif int(hour) <= 12:
-        last_updated = hour + ':' + minute + 'am ' + day + '/' + month + '/' + year
+        last_updated = 'Last Updated: ' + str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+    elif int(hour) == 12:
+        last_updated = 'Last Updated: ' + str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+    elif int(hour) < 12:
+        last_updated = 'Last Updated: ' + hour + ':' + minute + 'am ' + day + '/' + month + '/' + year
     print (last_updated)
 
     #Add to dict
-    data['events'].append(last_updated)
+    data['last_updated'] = []
+    data['last_updated'].append({
+    'last_updated': last_updated
+    })
 
     with open('events.json', 'w') as outfile:
         json.dump(data, outfile, default=str)

@@ -27,6 +27,7 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -166,6 +167,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        try {
+                            Log.d(TAG, "onResponse: Trying secondary JSON parser");
+                            JSONArray jsonArray = response.getJSONArray("last_updated");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject last_updated_array = jsonArray.getJSONObject(i);
+
+                                Log.d(TAG, "onResponse: got object");
+
+                                String last_updated = last_updated_array.getString("last_updated");
+                                TextView last_update_textView = findViewById(R.id.last_updated_textview);
+                                last_update_textView.setText(last_updated);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -190,7 +208,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String focusAddress = focusItem.getLocation();
             String focusIcon = focusItem.getEventIcon();
             if (getLocationFromAddress(this, focusAddress) != null) {
-                focusMarker = mMap.addMarker(new MarkerOptions().position(getLocationFromAddress(this, focusAddress)));
+                focusMarker = mMap.addMarker(new MarkerOptions()
+                        .position(getLocationFromAddress(this, focusAddress))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
                 focusMarker.setTag(i);
                 markerList.add(focusMarker);
             }
@@ -203,7 +223,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         for (Marker m : markerList) {
             LatLng latLng = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
-            mMap.addMarker(new MarkerOptions().position(latLng));
+            int tagID = (int) m.getTag();
+            EventItem clickedItem = mEventList.get(tagID);
+            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png") {
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
+            }
+            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png") {
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
+            }
+            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30px.png") {
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
+            } else {
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
+            }
             Log.d(TAG, "onMapReady: Displaying marker at:" + latLng);
             moveCamera(latLng, DEFAULT_ZOOM);
         }
