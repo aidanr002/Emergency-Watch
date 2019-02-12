@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/last_updated_textview"
-            android:text="Last Updated: Unknown"
+            android:text="Last Updated: "
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp" />

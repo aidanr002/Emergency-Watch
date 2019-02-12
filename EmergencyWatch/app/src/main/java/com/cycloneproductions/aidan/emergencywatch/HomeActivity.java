@@ -2,14 +2,17 @@ package com.cycloneproductions.aidan.emergencywatch;
 
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +50,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_EVENTLIST = "eventlist";
     public static final String EXTRA_EVENTICON = "eventIcon";
 
+    private boolean disclaimerGiven = false;
     private RecyclerView mRecyclerView;
     private EventAdapter mEventAdapter;
     private ArrayList<EventItem> mEventList;
@@ -61,10 +65,29 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        boolean disclaimerGiven = MyApplication.getDisclaimerGiven();
+
+        if (disclaimerGiven != true) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Warning:");
+            builder.setMessage(R.string.disclaimer);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    MyApplication.setDisclaimer(true);
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        }
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
