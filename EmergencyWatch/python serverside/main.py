@@ -83,9 +83,12 @@ while True:
 
         #Gets the description
         event_content = entry.find("content").text
-        event_content.replace('<div>','')
-        event_content.replace('</div>','')
-        event_content.replace('<b>','\n')
+        event_content = event_content.replace('<div>','')
+        event_content = event_content.replace('</div>','')
+        event_content = event_content.replace('<b>','\n')
+        event_content = event_content.replace('<br />','\n')
+    
+        print (event_content)
 
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")

@@ -208,11 +208,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String focusAddress = focusItem.getLocation();
             String focusIcon = focusItem.getEventIcon();
             if (getLocationFromAddress(this, focusAddress) != null) {
-                focusMarker = mMap.addMarker(new MarkerOptions()
-                        .position(getLocationFromAddress(this, focusAddress))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
-                focusMarker.setTag(i);
-                markerList.add(focusMarker);
+                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png")) {
+                    focusMarker = mMap.addMarker(new MarkerOptions()
+                            .position(getLocationFromAddress(this, focusAddress))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
+                    focusMarker.setTag(i);
+                    markerList.add(focusMarker);
+                }
+                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png")) {
+                    focusMarker = mMap.addMarker(new MarkerOptions()
+                            .position(getLocationFromAddress(this, focusAddress))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
+                    focusMarker.setTag(i);
+                    markerList.add(focusMarker);
+                }
+                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30png")) {
+                    focusMarker = mMap.addMarker(new MarkerOptions()
+                            .position(getLocationFromAddress(this, focusAddress))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
+                    focusMarker.setTag(i);
+                    markerList.add(focusMarker);
+                }
+                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png")) {
+                    focusMarker = mMap.addMarker(new MarkerOptions()
+                            .position(getLocationFromAddress(this, focusAddress))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
+                    focusMarker.setTag(i);
+                    markerList.add(focusMarker);
+                }
             }
             }
 
@@ -225,21 +248,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             LatLng latLng = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
             int tagID = (int) m.getTag();
             EventItem clickedItem = mEventList.get(tagID);
-            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png") {
+            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
             }
-            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png") {
+            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
             }
-            if (clickedItem.getEventIcon() == "https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30px.png") {
+            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
-            } else {
+            }
+            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
