@@ -6,6 +6,9 @@ def character_ord_check(event_content):
         character_ord  = ord(character)
         if character_ord >= 32  and   character_ord <= 127:
             temp_event_content += character
+        #Checks to see if it is a wanted special character
+        if character_ord == 176:
+            temp_event_content += character
     return temp_event_content
 
 def tag_removal(event_content):

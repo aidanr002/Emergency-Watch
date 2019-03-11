@@ -55,6 +55,7 @@ while True:
 
         #Gets written address
         event_title = entry.find('title').text
+        event_title = character_ord_check(event_title)
 
         #Gets updated time
         event_time = entry.find('updated').text
@@ -87,7 +88,6 @@ while True:
         event_content = content_scraper_scraper(event_content)
         event_content  = character_ord_check(event_content)
         event_content = tag_removal(event_content)
-        print (event_content)
 
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")
