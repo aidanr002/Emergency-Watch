@@ -7,6 +7,7 @@ from requests.packages.urllib3.util.retry import Retry
 import datetime
 from datetime import datetime
 from dateutil import tz
+from scraper_cleanup import *
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -83,16 +84,13 @@ while True:
 
         #Gets the description
         event_content = entry.find("content").text
-        event_content = event_content.replace('<div>','')
-        event_content = event_content.replace('</div>','')
-        event_content = event_content.replace('<b>','\n')
-        event_content = event_content.replace('<br />','\n')
-    
+        event_content = content_scraper_scraper(event_content)
+        event_content  = character_ord_check(event_content)
+        event_content = tag_removal(event_content)
         print (event_content)
 
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")
-
 
         data['events'].append({
             'event_heading': event_type + ": " + event_level,

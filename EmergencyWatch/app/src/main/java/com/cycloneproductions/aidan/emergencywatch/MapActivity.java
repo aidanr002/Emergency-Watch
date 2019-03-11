@@ -294,6 +294,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             p1 = new LatLng(location.getLatitude(), location.getLongitude());
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (IndexOutOfBoundsException ex){
+            ex.printStackTrace();
         }
         return p1;
     }
