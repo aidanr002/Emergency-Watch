@@ -12,7 +12,7 @@ from scraper_cleanup import tag_removal
 from scraper_cleanup import content_scraper_scraper
 from scraper_cleanup import url_removal_in_description
 
-CODE_VERSION = "Version 1.2 - 12 / 3 / 2019"
+CODE_VERSION = "Version 1.3 - 12 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -136,7 +136,8 @@ while True:
     #Add to dict
     data['last_updated'] = []
     data['last_updated'].append({
-    'last_updated': last_updated
+    'last_updated': last_updated,
+    'code_version': CODE_VERSION
     })
 
     with open('events.json', 'w') as outfile:

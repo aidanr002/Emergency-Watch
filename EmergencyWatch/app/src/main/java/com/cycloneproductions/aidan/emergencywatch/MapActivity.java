@@ -160,8 +160,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 String time = event.getString("time");
                                 String description = event.getString("description");
                                 String eventIcon = event.getString("event_icon");
+                                String eventLat = event.getString("event_lat");
+                                String eventLng = event.getString("event_lng");
 
-                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon));
+                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon, eventLat, eventLng));
                             }
                             getLocationPermission();
                         } catch (JSONException e) {
@@ -207,31 +209,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             EventItem focusItem = mEventList.get(i);
             String focusAddress = focusItem.getLocation();
             String focusIcon = focusItem.getEventIcon();
-            if (getLocationFromAddress(this, focusAddress) != null) {
+            String focusLat = focusItem.getEventLat();
+            String focusLng = focusItem.getEventLng();
+            if (getLocationFromCoords(this, focusLat, focusLng ) != null) {
+
                 if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
-                            .position(getLocationFromAddress(this, focusAddress))
+                            .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
                 if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
-                            .position(getLocationFromAddress(this, focusAddress))
+                            .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
                 if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
-                            .position(getLocationFromAddress(this, focusAddress))
+                            .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
                 if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
-                            .position(getLocationFromAddress(this, focusAddress))
+                            .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
@@ -278,6 +283,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    public LatLng getLocationFromCoords(Context context, String eventLat, String eventLng) {
+        LatLng location = null;
+        try {
+            double latitude = Double.parseDouble(eventLat);
+            double longitude = Double.parseDouble(eventLng);
+            location = new LatLng(latitude, longitude);
+        } catch (IndexOutOfBoundsException ex){
+            ex.printStackTrace();
+        }
+        return location;
+    }
     public LatLng getLocationFromAddress(Context context, String strAddress) {
 
         Geocoder coder = new Geocoder(context);

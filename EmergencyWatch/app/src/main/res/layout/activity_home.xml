@@ -34,7 +34,6 @@
                 android:background="@color/colorPrimary"/>
 
         </android.support.v7.widget.Toolbar>
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"

@@ -16,7 +16,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -74,19 +76,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         boolean disclaimerGiven = MyApplication.getDisclaimerGiven();
 
         if (disclaimerGiven != true) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Warning:");
-            builder.setMessage(R.string.disclaimer);
+            final TextView textView = new TextView(this);
+            textView.setText(R.string.disclaimer);
+            textView.setMovementMethod(LinkMovementMethod.getInstance()); // this is important to make the links clickable
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    MyApplication.setDisclaimer(true);
-                    dialog.cancel();
-                }
-            });
-
-            builder.show();
+            final AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom))
+                    .setPositiveButton("OK", null)
+                    .setView(textView)
+                    .create();
+            alertDialog.show();
         }
 
         drawer = findViewById(R.id.drawer_layout);
@@ -146,8 +144,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 String time = event.getString("time");
                                 String description = event.getString("description");
                                 String eventIcon = event.getString("event_icon");
+                                String eventLat = event.getString("event_lat");
+                                String eventLng = event.getString("event_lng");
 
-                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon));
+                                mEventList.add(new EventItem(eventHeading, location, time, description, eventIcon, eventLat, eventLng));
                             }
 
                             mEventAdapter = new EventAdapter(HomeActivity.this, mEventList);
