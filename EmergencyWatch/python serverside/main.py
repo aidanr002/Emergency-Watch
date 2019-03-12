@@ -7,7 +7,12 @@ from requests.packages.urllib3.util.retry import Retry
 import datetime
 from datetime import datetime
 from dateutil import tz
-from scraper_cleanup import *
+from scraper_cleanup import character_ord_check
+from scraper_cleanup import tag_removal
+from scraper_cleanup import content_scraper_scraper
+from scraper_cleanup import url_removal_in_description
+
+CODE_VERSION = "Version 1.2 - 12 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -88,7 +93,7 @@ while True:
         event_content = content_scraper_scraper(event_content)
         event_content  = character_ord_check(event_content)
         event_content = tag_removal(event_content)
-
+        event_content = url_removal_in_description(event_content)
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")
 
@@ -138,4 +143,5 @@ while True:
         json.dump(data, outfile, default=str)
 
     print ('Completed Scrape. Sleeping for 5 minutes')
+    print (CODE_VERSION)
     time.sleep(300)

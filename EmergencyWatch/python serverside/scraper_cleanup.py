@@ -33,3 +33,24 @@ def content_scraper_scraper(event_content):
         elif inside_wanted_word_range == True:
             temp_event_content_result += (word + " ")
     return temp_event_content_result
+
+def url_removal_in_description(event_content):
+    #Takes in the event content text. It splits this into individual words and then checks for the word 'details'. From here, it adds all other words to the returnable string.
+    words_to_replace_string = ''
+    event_description_words = []
+    event_description_words = event_content.split(' ')
+    inside_wanted_word_range = False
+    for word in event_description_words:
+        #Checks for first word
+        if 'for' in word.lower():
+            inside_wanted_word_range = True
+        #If inside removal section and the second part it correct, add it to the list.
+        if 'more:bit' in word.lower():
+            words_to_replace_string += word
+            inside_wanted_word_range = False
+            event_content = event_content.replace('For ' + words_to_replace_string, '')
+        #If the next word isn't on target stop
+        else:
+            words_to_replace_string = ''
+            inside_wanted_word_range = False
+    return event_content
