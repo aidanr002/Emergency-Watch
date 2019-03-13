@@ -12,7 +12,7 @@ from scraper_cleanup import tag_removal
 from scraper_cleanup import content_scraper_scraper
 from scraper_cleanup import url_removal_in_description
 
-CODE_VERSION = "Version 1.3 - 12 / 3 / 2019"
+CODE_VERSION = "Version 1.5 - 12 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -25,10 +25,10 @@ while True:
 
 
     #fire
-    INFORMATION_FIRE_ICON = "https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png"
-    ADVICE_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png"
-    WATCHACT_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png"
-    EMERGENCY_FIRE_ICON = "https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30px.png"
+    INFORMATION_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/information.png"
+    ADVICE_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/yellowfire.png"
+    WATCHACT_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/orangefire.png"
+    EMERGENCY_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/redfire.png"
 
     #QLD Rural Fire Service
 
@@ -79,6 +79,9 @@ while True:
         hour = "%d" % event_time.hour
         minute = "%d" % event_time.minute
 
+        if int(minute) < 10:
+            minute = "0" + minute
+
         #Concatanate the parts into the ideal string
         if int(hour) > 12:
             hour = int(hour) % 12
@@ -122,6 +125,9 @@ while True:
     day = "%d" % currentDT.day
     hour = "%d" % currentDT.hour
     minute = "%d" % currentDT.minute
+
+    if int(minute) < 10:
+        minute = "0" + minute
 
     #Concatanate the parts into the ideal string
     if int(hour) > 12:
