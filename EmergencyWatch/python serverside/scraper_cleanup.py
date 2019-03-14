@@ -20,6 +20,20 @@ def tag_removal(event_content):
     #Returns the  result
     return event_content
 
+def special_tag_removal(event_content):
+    temp_event_content = ''
+    inside_wanted_word_range = False
+    for character in event_content:
+        #Checks if character is the start of replacable string
+        if character  == '<':
+            inside_wanted_word_range = True
+        if character == ">":
+            inside_wanted_word_range = False
+        if inside_wanted_word_range == False:
+            temp_event_content += character
+    return temp_event_content
+
+
 def content_scraper_scraper(event_content):
     #Takes in the event content text. It splits this into individual words and then checks for the word 'details'. From here, it adds all other words to the returnable string.
     temp_event_content_result = ''

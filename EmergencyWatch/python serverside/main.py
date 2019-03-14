@@ -11,8 +11,9 @@ from scraper_cleanup import character_ord_check
 from scraper_cleanup import tag_removal
 from scraper_cleanup import content_scraper_scraper
 from scraper_cleanup import url_removal_in_description
+from scraper_cleanup import special_tag_removal
 
-CODE_VERSION = "Version 1.5 - 12 / 3 / 2019"
+CODE_VERSION = "Version 1.6 - 15 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -97,6 +98,7 @@ while True:
         event_content  = character_ord_check(event_content)
         event_content = tag_removal(event_content)
         event_content = url_removal_in_description(event_content)
+        event_content = special_tag_removal(event_content)
         # Gets the set of coord's and sets them to sperate variables
         event_lat, event_lng = entry.find("georss:point").text.split(" ")
 

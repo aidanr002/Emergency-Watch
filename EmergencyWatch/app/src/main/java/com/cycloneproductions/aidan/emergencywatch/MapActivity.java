@@ -4,9 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,16 +20,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -41,32 +33,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.koushikdutta.ion.Ion;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTICON;
 import static com.cycloneproductions.aidan.emergencywatch.HomeActivity.EXTRA_EVENTLIST;
@@ -77,7 +60,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 9f;
+    private static final float DEFAULT_ZOOM = 8f;
 
     // Variables
     private Boolean mLocationPermissionGranted = false;
@@ -91,8 +74,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public static final String EXTRA_DESCRIPTION = "description";
     private DrawerLayout drawer;
     private RequestQueue mRequestQueue;
-
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -213,28 +194,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String focusLng = focusItem.getEventLng();
             if (getLocationFromCoords(this, focusLat, focusLng ) != null) {
 
-                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png")) {
+                if (focusItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/yellowfire.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
                             .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
-                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png")) {
+                if (focusItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/orangefire.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
                             .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
-                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30png")) {
+                if (focusItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/redfire.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
                             .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
                     focusMarker.setTag(i);
                     markerList.add(focusMarker);
                 }
-                if (focusItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png")) {
+                if (focusItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/information.png")) {
                     focusMarker = mMap.addMarker(new MarkerOptions()
                             .position(getLocationFromCoords(this, focusLat, focusLng))
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
@@ -253,22 +234,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             LatLng latLng = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
             int tagID = (int) m.getTag();
             EventItem clickedItem = mEventList.get(tagID);
-            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/01_ADVICE_K-edge_96RGB_30px.png")) {
+            if (clickedItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/yellowfire.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.advice)));
             }
-            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/02_WATCH_K-edge_96RGB_30px.png")) {
+            if (clickedItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/orangefire.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.watchact)));
             }
-            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/PublishingImages/03_EMERGENCY_K-edge_96RGB_30png")) {
+            if (clickedItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/redfire.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.emergency)));
             }
-            if (clickedItem.getEventIcon().equals("https://www.ruralfire.qld.gov.au/map/PublishingImages/Pages/default/01_NOTIFICATION.png")) {
+            if (clickedItem.getEventIcon().equals("http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/information.png")) {
                 mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.information)));
@@ -276,12 +257,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.d(TAG, "onMapReady: Displaying marker at:" + latLng);
             moveCamera(latLng, DEFAULT_ZOOM);
         }
+        mMap.setOnMyLocationChangeListener(myLocationChangeListener);
 
-        if (mLocationPermissionGranted) {
-            getDeviceLocation();
-
-        }
     }
+
+    private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+        @Override
+        public void onMyLocationChange(Location location) {
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            if(mMap != null){
+                moveCamera(loc, DEFAULT_ZOOM);
+            }
+        }
+    };
 
     public LatLng getLocationFromCoords(Context context, String eventLat, String eventLng) {
         LatLng location = null;
@@ -316,36 +307,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return p1;
     }
 
-
-    private void getDeviceLocation() {
-        Log.d(TAG, "getDeviceLocation: Gettingt the devices current location");
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        try {
-            if (mLocationPermissionGranted) {
-                final Task location = mFusedLocationProviderClient.getLastLocation();
-
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: Found Location");
-                            Location currentLocation = (Location) task.getResult();
-
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM);
-
-                        } else {
-                            Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText((MapActivity.this), "Unable to get current location", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e) {
-            Log.d(TAG, "getDeviceLocation: Security Exception:" + e.getMessage());
-        }
-    }
 
     private void moveCamera(LatLng latLng, float zoom) {
         Log.d(TAG, "moveCamera: moving camera to: Lat:" + latLng.latitude + ", Lng: " + latLng.longitude);
