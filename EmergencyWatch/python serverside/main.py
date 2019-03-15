@@ -13,7 +13,7 @@ from scraper_cleanup import content_scraper_scraper
 from scraper_cleanup import url_removal_in_description
 from scraper_cleanup import special_tag_removal
 
-CODE_VERSION = "Version 1.6 - 15 / 3 / 2019"
+CODE_VERSION = "Version 1.7 - 15 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -65,7 +65,7 @@ while True:
 
         #Gets updated time
         event_time = entry.find('updated').text
-
+        event_time = event_time.replace('+10:00', '')
         from_zone = tz.gettz('UTC')
         to_zone = tz.gettz('Australia/Brisbane')
         utc = datetime.strptime(event_time, '%Y-%m-%dT%H:%M:%S')
