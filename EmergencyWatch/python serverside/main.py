@@ -20,7 +20,15 @@ port = 465  # For SSL
 smtp_server = "smtp.gmail.com"
 sender_email = "emergencywatchalert@gmail.com"  # Enter your address
 receiver_email = "aidanr002@gmail.com"  # Enter receiver address
-password = raw_input("Type your password and press enter: ")
+try:
+    password = raw_input("Type your password and press enter: ")
+except:
+    pass
+
+try:
+    password = input("Type your password and press enter: ")
+except:
+    pass
 message = """\
 Subject: Warning - Crash Alert
 This message is sent from Python. \n"""
@@ -89,7 +97,7 @@ while True:
 
             #Gets updated time
             event_time = entry.find('updated').text
-            #event_time = event_time.replace('+10:00', '')
+            event_time = event_time.replace('+10:00', '')
             from_zone = tz.gettz('UTC')
             to_zone = tz.gettz('Australia/Brisbane')
             utc = datetime.strptime(event_time, '%Y-%m-%dT%H:%M:%S')
