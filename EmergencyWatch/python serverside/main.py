@@ -4,7 +4,6 @@ import json
 import time
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-import datetime
 from datetime import datetime
 from dateutil import tz
 from scraper_cleanup import character_ord_check
@@ -20,15 +19,7 @@ port = 465  # For SSL
 smtp_server = "smtp.gmail.com"
 sender_email = "emergencywatchalert@gmail.com"  # Enter your address
 receiver_email = "aidanr002@gmail.com"  # Enter receiver address
-try:
-    password = raw_input("Type your password and press enter: ")
-except:
-    pass
-
-try:
-    password = input("Type your password and press enter: ")
-except:
-    pass
+password = 'nice try'
 message = """\
 Subject: Warning - Crash Alert
 This message is sent from Python. \n"""
@@ -196,7 +187,7 @@ while True:
         send_error_email(e)
 
     except ImportError as e:
-        print "NO module found"
+        print ("NO module found")
         send_error_email(e)
 
     except EOFError as e:
