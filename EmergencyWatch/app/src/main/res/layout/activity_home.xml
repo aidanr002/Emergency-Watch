@@ -53,7 +53,7 @@
             android:text="Last Updated: "
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
 
         <View
             android:layout_width="match_parent"
@@ -75,7 +75,7 @@
                 android:text="List"
                 android:textAllCaps="true"
                 android:textColor="#ffffff"
-                android:textSize="24sp" />
+                android:textSize="24dp" />
 
             <View
                 android:layout_width="1dp"
@@ -91,7 +91,7 @@
                 android:text="Map"
                 android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp" />
+                android:textSize="24dp" />
 
         </LinearLayout>
     </LinearLayout>

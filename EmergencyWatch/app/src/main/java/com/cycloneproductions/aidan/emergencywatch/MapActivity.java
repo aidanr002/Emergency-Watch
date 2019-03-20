@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -181,7 +182,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady: Map is ready");
-        Toast.makeText(this, "Map Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         List<Marker> markerList = new ArrayList<>();
@@ -282,6 +282,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             location = new LatLng(latitude, longitude);
         } catch (IndexOutOfBoundsException ex){
             ex.printStackTrace();
+            Toast.makeText(this, "An error occured: Not all items were displayed", Toast.LENGTH_LONG).show();
         }
         return location;
     }

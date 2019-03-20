@@ -29,7 +29,7 @@ def special_tag_removal(event_content):
             inside_wanted_word_range = True
         if character == ">":
             inside_wanted_word_range = False
-        if inside_wanted_word_range == False:
+        elif inside_wanted_word_range == False:
             temp_event_content += character
     return temp_event_content
 

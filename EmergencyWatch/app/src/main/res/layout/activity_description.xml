@@ -50,26 +50,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="heading"
-                android:textSize="32sp" />
+                android:textSize="32dp" />
 
             <TextView
                 android:id="@+id/text_view_location_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="location"
-                android:textSize="24sp" />
+                android:textSize="24dp" />
 
             <TextView
                 android:id="@+id/text_view_time_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="time"
-                android:textSize="16sp" />
+                android:textSize="16dp" />
         </LinearLayout>
     </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:padding="16dp"
         android:layout_height="wrap_content" >
         <TextView
