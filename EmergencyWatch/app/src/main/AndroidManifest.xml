@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".MyApplication"
-        android:icon="@drawable/triangle">
+        android:icon="@mipmap/ic_launcher">
         <activity android:name=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
