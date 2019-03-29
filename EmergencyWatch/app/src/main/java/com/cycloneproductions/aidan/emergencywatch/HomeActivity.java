@@ -229,16 +229,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onItemClick(int position) {
-        Intent descriptionIntent = new Intent(this, DescriptionActivity.class);
-        EventItem clickedItem = mEventList.get(position);
+        try {
+            Intent descriptionIntent = new Intent(this, DescriptionActivity.class);
+            EventItem clickedItem = mEventList.get(position);
 
-        descriptionIntent.putExtra(EXTRA_EVENT, clickedItem.getEvent());
-        descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
-        descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
-        descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
-        descriptionIntent.putExtra(EXTRA_EVENTICON, clickedItem.getEventIcon());
+            descriptionIntent.putExtra(EXTRA_EVENT, clickedItem.getEvent());
+            descriptionIntent.putExtra(EXTRA_LOCATION, clickedItem.getLocation());
+            descriptionIntent.putExtra(EXTRA_TIME, clickedItem.getTime());
+            descriptionIntent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
+            descriptionIntent.putExtra(EXTRA_EVENTICON, clickedItem.getEventIcon());
 
-        startActivity(descriptionIntent);
+            startActivity(descriptionIntent);
+        } catch (IndexOutOfBoundsException ex) {
+            Toast.makeText(this, "An Error Occured", Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
     }
 
     @Override

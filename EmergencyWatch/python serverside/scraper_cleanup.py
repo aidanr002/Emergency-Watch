@@ -1,3 +1,4 @@
+#Version 2.2
 def character_ord_check(event_content):
     #Iterates through every character and if the ord of the character isn't  a letter, number or approved character, it ignores itself.
     temp_event_content = ''
@@ -17,6 +18,19 @@ def tag_removal(event_content):
     event_content = event_content.replace('</div>','\n')
     event_content = event_content.replace('<b>',' ')
     event_content = event_content.replace('<br />',' ')
+    #Returns the  result
+    return event_content
+
+def tag_removal_for_linebreak(event_content):
+    #Removes some key tags from the  text entered  by replacing them with '' or \n
+    new_event_content = ''
+    for character in event_content:
+        new_event_content += str(character)
+    event_content = new_event_content
+    event_content = event_content.replace('<div>','\n')
+    event_content = event_content.replace('</div>','\n')
+    event_content = event_content.replace('<b>','\n')
+    event_content = event_content.replace('<br/>','\n')
     #Returns the  result
     return event_content
 
@@ -67,4 +81,9 @@ def url_removal_in_description(event_content):
         else:
             words_to_replace_string = ''
             inside_wanted_word_range = False
+    return event_content
+
+def extra_character_removal(event_content):
+    event_content = event_content.replace(']', '')
+    event_content = event_content.replace('>', '')
     return event_content

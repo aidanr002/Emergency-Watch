@@ -11,8 +11,11 @@ from scraper_cleanup import tag_removal
 from scraper_cleanup import content_scraper_scraper
 from scraper_cleanup import url_removal_in_description
 from scraper_cleanup import special_tag_removal
+from scraper_cleanup import tag_removal_for_linebreak
+from scraper_cleanup import extra_character_removal
+
 #Email alert
-import smtplib, ssl
+import smtplib
 import traceback
 
 port = 465  # For SSL
@@ -35,7 +38,7 @@ def send_error_email(e):
     time.sleep(86400)
 
 
-CODE_VERSION = "Version 1.8 - 18 / 3 / 2019"
+CODE_VERSION = "Version 2.2 - 29 / 3 / 2019"
 
 session = requests.Session()
 retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -44,6 +47,7 @@ session.mount('https://', adapter)
 session.mount('http://', adapter)
 while True:
     try:
+
         data = {}
         data['events'] = []
 
@@ -134,6 +138,90 @@ while True:
                 'event_lat': event_lat,
                 'event_lng': event_lng
             })
+            #End of for loop for QLD RFS
+
+            #Start of loop for NSW RFS
+        #Loads link as focus source
+        source = session.get('http://www.rfs.nsw.gov.au/feeds/majorIncidents.xml', verify = False).text
+        #Creates object with this source
+        soup = BeautifulSoup(source, 'lxml')
+        channel  = soup.find('channel')
+        # Goes through the soup object and for each class it iterates through some extractions
+        for entry in channel.find_all('item'):
+            # Since it is NSW RFS, the type is set to generic fire
+            event_type = 'Fire'
+            #Gets the level
+            event_level = entry.find("category").text
+
+            #Depending on level, sets icon
+            if "information" in event_level.lower() or "notification" in event_level.lower():
+                event_icon = INFORMATION_FIRE_ICON
+            elif "advice" in event_level.lower():
+                event_icon = ADVICE_FIRE_ICON
+            elif "watch and act" in event_level.lower():
+                event_icon = WATCHACT_FIRE_ICON
+            elif "emergency warning" in event_level.lower():
+                event_icon = EMERGENCY_FIRE_ICON
+            elif "not applicable" in event_level.lower():
+                event_icon = INFORMATION_FIRE_ICON
+            else:
+                event_icon = INFORMATION_FIRE_ICON
+
+            #Gets written address
+            event_title = entry.find('title').text
+            event_title = character_ord_check(event_title)
+
+            #Gets updated time
+            event_time = entry.find("pubdate").text
+            event_time = event_time.replace(' GMT', '')
+            from_zone = tz.gettz('UTC')
+            to_zone = tz.gettz('Australia/Brisbane')
+            utc = datetime.strptime(event_time, '%a, %d %b %Y %H:%M:%S')
+            utc = utc.replace(tzinfo=from_zone)
+            event_time = utc.astimezone(to_zone)
+            event_time_converted = event_time.isoformat()
+
+            #Seperates into usable parts
+            year = "%d" % event_time.year
+            month = "%d" % event_time.month
+            day = "%d" % event_time.day
+            hour = "%d" % event_time.hour
+            minute = "%d" % event_time.minute
+
+            if int(minute) < 10:
+                minute = "0" + minute
+
+            #Concatanate the parts into the ideal string
+            if int(hour) > 12:
+                hour = int(hour) % 12
+                event_time = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+            elif int(hour) == 12:
+                event_time = str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
+            elif int(hour) < 12:
+                event_time = str(hour) + ':' + minute + 'am ' + day + '/' + month + '/' + year
+
+            #Gets the description
+            event_content = entry.find("description")
+            event_content = tag_removal_for_linebreak(event_content)
+            event_content = extra_character_removal(event_content)
+            print (event_content)
+
+            # Gets the set of coord's and sets them to sperate variables
+            event_lat, event_lng = entry.find("point").text.split(" ")
+
+            data['events'].append({
+                'event_heading': event_type + ": " + event_level,
+                'location': event_title,
+                'time': event_time,
+                'description': event_content,
+                'event_icon': event_icon,
+                'event_lat': event_lat,
+                'event_lng': event_lng
+            })
+            #End of loop for NSW RFS
+    ###
+    ### Start of general script
+    ###
 
         # Last updated time
         #Gets the time string
@@ -197,11 +285,5 @@ while True:
     except NameError as e:
         send_error_email(e)
 
-    except:
-        print('An error occured.')
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message)
-            server.close()
-            time.sleep(86400)
+    except Except as e:
+        send_error_email(e)
