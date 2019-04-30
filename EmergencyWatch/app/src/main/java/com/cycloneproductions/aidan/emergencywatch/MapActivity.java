@@ -391,6 +391,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ex.printStackTrace();
             Toast.makeText(this, "An Error Occured", Toast.LENGTH_LONG).show();
 
+        } catch (IndexOutOfBoundsException ex) {
+            ex.printStackTrace();
+            Toast.makeText(this, "An error occured", Toast.LENGTH_LONG).show();
         }
         return false;
 
