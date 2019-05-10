@@ -7,47 +7,15 @@ from requests.packages.urllib3.util.retry import Retry
 from datetime import datetime
 from dateutil import tz
 from scraper_cleanup import character_ord_check
-from scraper_cleanup import tag_removal
-from scraper_cleanup import content_scraper_scraper
-from scraper_cleanup import url_removal_in_description
-from scraper_cleanup import special_tag_removal
 from scraper_cleanup import tag_removal_for_linebreak
+from scraper_cleanup import special_tag_removal
 
-#Email alert
-import smtplib, ssl
-import traceback
-
-port = 465  # For SSL
-smtp_server = "smtp.gmail.com"
-sender_email = "emergencywatchalert@gmail.com"  # Enter your address
-receiver_email = "aidanr002@gmail.com"  # Enter receiver address
-password = 'nice try'
-message = """\
-Subject: Warning - Crash Alert
-This message is sent from Python. \n"""
-
-def send_error_email(e):
-    just_the_string = traceback.format_exc()
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.ehlo()
-    server.starttls()
-    server.login(sender_email, password)
-    server.sendmail(sender_email, receiver_email, (message + just_the_string))
-    server.close()
-    time.sleep(86400)
-
-
-CODE_VERSION = "Version 1.9 - 29 / 3 / 2019"
-
-session = requests.Session()
-retry = Retry(connect = 3, backoff_factor = 0.5)
-adapter = HTTPAdapter(max_retries = retry)
-session.mount('https://', adapter)
-session.mount('http://', adapter)
-while True:
-    #try:
-    data = {}
-    data['events'] = []
+def get_wa_fire_events(data):
+    session = requests.Session()
+    retry = Retry(connect = 3, backoff_factor = 0.5)
+    adapter = HTTPAdapter(max_retries = retry)
+    session.mount('https://', adapter)
+    session.mount('http://', adapter)
 
     #fire
     INFORMATION_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/information.png"
@@ -56,9 +24,9 @@ while True:
     EMERGENCY_FIRE_ICON = "http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/redfire.png"
     APP_ICON = 'http://images001.cyclonewebservices.com/wp-content/uploads/2019/03/triangle.png'
 
-        #Start of loop for WA Fire
+    #Start of loop for WA Fire
     #Loads link as focus source
-    source = session.get('https://www.emergency.wa.gov.au/data/message_DFESCap.xml', verify = False).text
+    source = session.get('http://www.emergency.wa.gov.au/data/message_DFESCap.xml', verify = False).text
     #Creates object with this source
     soup = BeautifulSoup(source, 'lxml')
 
@@ -177,38 +145,4 @@ while True:
                 'event_lat': event_lat,
                 'event_lng': event_lng
             })
-            print (data)
-
-    print ('Completed Scrape. Sleeping for 5 minutes')
-    print (CODE_VERSION)
-    time.sleep(300)
-
-    # except IOError as e:
-    #     print('An error occured trying to read the file.')
-    #     send_error_email(e)
-    #
-    # except ValueError as  e:
-    #     print('Non-numeric data found in the file.')
-    #     send_error_email(e)
-    #
-    # except ImportError as e:
-    #     print ("NO module found")
-    #     send_error_email(e)
-    #
-    # except EOFError as e:
-    #     print('Why did you do an EOF on me?')
-    #     send_error_email(e)
-    #
-    # except NameError as e:
-    #     send_error_email(e)
-    #
-    # except:
-    #     print('An error occured.')
-    #     time.sleep(300)
-    #
-    #     #context = ssl.create_default_context()
-    #     with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-    #         server.login(sender_email, password)
-    #         server.sendmail(sender_email, receiver_email, message)
-    #         server.close()
-    #         time.sleep(86400)
+        return (data)

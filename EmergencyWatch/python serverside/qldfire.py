@@ -29,7 +29,7 @@ def get_qld_fire_events(data):
     #QLD Rural Fire Service
 
     #Loads link as focus source
-    source = session.get('https://www.qfes.qld.gov.au/data/alerts/bushfireAlert.xml', verify = False).text
+    source = session.get('http://www.qfes.qld.gov.au/data/alerts/bushfireAlert.xml', verify = False).text
     #Creates object with this source
     soup = BeautifulSoup(source, 'lxml')
 
