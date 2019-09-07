@@ -20,7 +20,7 @@ NSW_FIRE = 'ONLINE'
 WA_FIRE = 'ONLINE'
 LAST_UPDATED = 'ONLINE'
 
-CODE_VERSION = "Version 3.2 - 7 / 9 / 2019" #Current code version for data stream tracking
+CODE_VERSION = "Version 3.3 - 7 / 9 / 2019" #Current code version for data stream tracking
 
 SLEEP_TIME_MINUTES = 5 #Sets time in between scrapes
 sleep_time_seconds = SLEEP_TIME_MINUTES * 60 #Converts the sleep time to seconds for time.sleep
@@ -100,6 +100,17 @@ while True: #Main logic loop running the scraper scripts
         #Saves the data in json file
         with open('events.json', 'w') as outfile:
             json.dump(data, outfile, default=str)
+
+        #Update Module Status/es
+        modules = {}  #Create dict for module status
+        modules['qld_fire'] = QLD_FIRE
+        modules['nsw_fire'] = NSW_FIRE
+        modules['wa_fire'] = WA_FIRE
+        modules['last_updated'] = LAST_UPDATED
+
+        #Saves the module statuses in json file
+        with open('module_statuses.json', 'w') as outfile:
+            json.dump(modules, outfile, default=str)
 
         #Provide text outputs
         print ('Completed Scrape. Sleeping for '+ str(SLEEP_TIME_MINUTES) + ' minutes')
