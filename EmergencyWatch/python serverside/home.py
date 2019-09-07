@@ -2,11 +2,9 @@ from qldfire import get_qld_fire_events
 from nswfire import get_nsw_fire_events
 from wafire import get_wa_fire_events
 from last_updated import get_last_updated_time
+from email_systems import send_error_email
 import time
 import json
-
-#Email alert
-import smtplib
 import traceback
 
 """
@@ -15,37 +13,22 @@ Online : Connected to primary module of type
 Error : Error reported. Disconnected
 Offline : Disconnected. Running disconnection script
 """
-#Modules:
+
+#Modules:  Sets the initial state for the core modules
 QLD_FIRE = 'ONLINE'
 NSW_FIRE = 'ONLINE'
 WA_FIRE = 'ONLINE'
 LAST_UPDATED = 'ONLINE'
 
-CODE_VERSION = "Version 3.1 - 10 / 5 / 2019"
+CODE_VERSION = "Version 3.2 - 7 / 9 / 2019" #Current code version for data stream tracking
 
-port = 465  # For SSL
-smtp_server = "smtp.gmail.com"
-sender_email = "emergencywatchalert@gmail.com"  # Enter your address
-receiver_email = "aidanr002@gmail.com"  # Enter receiver address
-password = 'nice try'
-message = """\
-Subject: Warning - Crash Alert
-This message is sent from Python. \n"""
+SLEEP_TIME_MINUTES = 5 #Sets time in between scrapes
+sleep_time_seconds = SLEEP_TIME_MINUTES * 60 #Converts the sleep time to seconds for time.sleep
 
-def send_error_email(e):
-    just_the_string = traceback.format_exc()
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.ehlo()
-    server.starttls()
-    server.login(sender_email, password)
-    server.sendmail(sender_email, receiver_email, (message + just_the_string))
-    server.close()
-
-while True:
+while True: #Main logic loop running the scraper scripts
     try:
         data = {}
         data['events'] = []
-
 
         #QLD FIRE Module Status Check
         if QLD_FIRE == 'ONLINE':
@@ -101,7 +84,7 @@ while True:
         #Last Updated Module Status Check
         if LAST_UPDATED == 'ONLINE':
             try:
-                data = get_last_updated_time(data, CODE_VERSION)
+                last_updated, data = get_last_updated_time(data, CODE_VERSION)
                 print (" LAST_UPDATED was successful")
             except Exception as e:
                 print (e)
@@ -114,13 +97,18 @@ while True:
         elif LAST_UPDATED == "ERROR":
             print ("Warning: LAST_UPDATED is in ERROR")
 
-
+        #Saves the data in json file
         with open('events.json', 'w') as outfile:
             json.dump(data, outfile, default=str)
 
-        print ('Completed Scrape. Sleeping for 5 minutes')
+        #Provide text outputs
+        print ('Completed Scrape. Sleeping for '+ str(SLEEP_TIME_MINUTES) + ' minutes')
+        print (last_updated)
         print (CODE_VERSION)
-        time.sleep(300)
+        time.sleep(sleep_time_seconds)
 
+    #If error at any stage, send email.
     except Exception as e:
         send_error_email(e)
+        print (e)
+        quit()

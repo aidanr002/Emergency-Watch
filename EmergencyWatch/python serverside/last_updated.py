@@ -32,7 +32,6 @@ def get_last_updated_time(data, CODE_VERSION):
         last_updated = 'Last Updated: ' + str(hour) + ':' + minute + 'pm ' + day + '/' + month + '/' + year
     elif int(hour) < 12:
         last_updated = 'Last Updated: ' + hour + ':' + minute + 'am ' + day + '/' + month + '/' + year
-    print (last_updated)
 
     #Add to dict
     data['last_updated'] = []
@@ -41,4 +40,4 @@ def get_last_updated_time(data, CODE_VERSION):
     'code_version': CODE_VERSION
     })
 
-    return data
+    return last_updated, data

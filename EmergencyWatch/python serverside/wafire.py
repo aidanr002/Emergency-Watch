@@ -138,11 +138,11 @@ def get_wa_fire_events(data):
 
             data['events'].append({
                 'event_heading': event_title,
-                'location': 'Unkown',
+                'location': 'Unknown',
                 'time': event_time,
                 'description': event_content,
                 'event_icon': event_icon,
                 'event_lat': event_lat,
                 'event_lng': event_lng
             })
-        return (data)
+    return (data)

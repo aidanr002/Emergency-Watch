@@ -2,11 +2,16 @@ package com.cycloneproductions.aidan.emergencywatch;
 
 
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -63,12 +68,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        createNotificationChannel();
 
         boolean disclaimerGiven = MyApplication.getDisclaimerGiven();
 
@@ -83,6 +91,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .create();
             alertDialog.show();
             MyApplication.setDisclaimer(true);
+
         }
 
         drawer = findViewById(R.id.drawer_layout);
@@ -113,6 +122,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             init();
         }
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "mainNotification";
+            String description = "mainNotificationChannel";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("mainChannel", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "mainChannel")
+            .setSmallIcon(R.drawable.emergency)
+            .setContentTitle("My Notification Test")
+            .setContentText("This is a test of the notification builder.")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
     @Override
     public void onBackPressed() {
@@ -188,6 +219,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mEventList = new ArrayList<>();
         parseJSON();
         Log.d(TAG, "refresh: Refreshed");
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        //notificationManager.notify(notificationId, builder.build());
     }
 
     private void init() {

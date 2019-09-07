@@ -170,7 +170,7 @@ while True:
 
             data['events'].append({
                 'event_heading': event_title,
-                'location': 'Unkown',
+                'location': 'Unknown',
                 'time': event_time,
                 'description': event_content,
                 'event_icon': event_icon,
